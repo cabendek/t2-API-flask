@@ -62,6 +62,7 @@ def list_tracks():
 
 @app.route("/artist/<id>/albums", methods=["GET"])
 def list_albums_per_artist(id):
+    artist = Artist.query.get_or_404(id)
     all_albums = Album.query.filter(Album.artist_id == id)
     return albums_schema.jsonify(all_albums)
 
@@ -69,7 +70,7 @@ def list_albums_per_artist(id):
 
 @app.route("/artist/<id>/tracks", methods=["GET"])
 def list_tracks_per_artist(id):
-    
+    artist = Artist.query.get_or_404(id)
     album_artista = Album.query.filter(Album.artist_id == id).all()
     
     lista_album = []
@@ -90,6 +91,7 @@ def list_tracks_per_artist(id):
 
 @app.route("/album/<id>/tracks", methods=["GET"])
 def list_tracks_per_album(id):
+    album = Album.query.get_or_404(id)
     all_tracks = Track.query.filter(Track.album_id == id)
     return tracks_schema.jsonify(all_tracks)
 
@@ -244,21 +246,27 @@ def delete_artist(id):
     artist = Artist.query.get_or_404(id)
     db.session.delete(artist)
     db.session.commit()
-    return jsonify({"message": "deleted"})
+    resp = jsonify({"message": "deleted"})
+    resp.status_code = 204
+    return resp
 
 @app.route("/albums/<id>", methods=["DELETE"])
 def delete_album(id):
     album = Album.query.get_or_404(id)
     db.session.delete(album)
     db.session.commit()
-    return jsonify({"message": "deleted"})
+    resp = jsonify({"message": "deleted"})
+    resp.status_code = 204
+    return resp
 
 @app.route("/tracks/<id>", methods=["DELETE"])
 def delete_track(id):
     track = Track.query.get_or_404(id)
     db.session.delete(track)
     db.session.commit()
-    return jsonify({"message": "deleted"})
+    resp = jsonify({"message": "deleted"})
+    resp.status_code = 204
+    return resp
 
 #------------ ERROR HANDLER ------------#
 
@@ -282,14 +290,18 @@ if __name__ == "__main__":
             a1 = Artist(id = "TWljaGFlbCBKYWNrc29u",
                         name = "Michael Jackson",
                         age = 21)
-
+                        #albums = "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u/albums")
+                        #tracks = "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u/tracks")
+                        #self = "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u")
             db.session.add(a1)
 
             al1 = Album(id = "T2ZmIHRoZSBXYWxsOlRXbG",
                         artist_id = "TWljaGFlbCBKYWNrc29u",
                         name = "Off the Wall",
                         genre = "Pop")
-
+                        #artist = ,
+                        #tracks = ,
+                        #self = )
 
             db.session.add(al1)
             
@@ -298,7 +310,9 @@ if __name__ == "__main__":
                        name = "Don't Stop 'Til You Get Enough",
                        duration = 4.1,
                        times_played = 0)
-
+                       #artist = ,  
+                       #album = ,
+                       #self = )
 
             db.session.add(t1)
 
