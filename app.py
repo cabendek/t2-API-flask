@@ -10,9 +10,9 @@ from decouple import config as config_decouple
 nombre_ruta = "127.0.0.1:5000/"
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = postgres://kbuparwbzgwakm:bc54ea253cd82ab7d451afb1fdc5d82a8854cf3969bf6582c23871392812f346@ec2-107-22-83-3.compute-1.amazonaws.com:5432/devt9v87hud1mo
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)pip
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///artist.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+db.init_app(app)
 ma.init_app(app)
 
 
