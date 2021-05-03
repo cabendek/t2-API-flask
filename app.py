@@ -7,14 +7,12 @@ from slugify import slugify
 from base64 import b64encode
 from decouple import config as config_decouple
 
-nombre_ruta = "127.0.0.1:5000/"
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///artist.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db.init_app(app)
 ma.init_app(app)
-
 
 def base64(string):
     encoded = b64encode(string.encode()).decode('utf-8')
@@ -167,6 +165,77 @@ def create_track(id):
     return resp
 
 
+#------------ PUT ------------#
+@app.route("/artists/<artist_id>/albums/play", methods=["PUT"])
+def play_artist_tracks(artist_id):
+    
+    album_artista = Album.query.filter(Album.artist_id == artist_id).all()
+    
+    lista_album = []
+    all_tracks = []
+
+    for album in album_artista:
+        if album.id not in lista_album:
+            lista_album.append(album.id)
+
+    for album_id in lista_album:
+        tracks_album = Track.query.filter(Track.album_id == album_id).all()
+        all_tracks.append(tracks_album[0])
+    
+    try:
+        for track in all_tracks:
+            track.times_played += 1
+            db.session.add(track)
+    
+    except ValidationError as errors:
+        resp = jsonify(errors.messages)
+        resp.status_code = 400
+        return resp
+
+    db.session.commit()
+    resp = jsonify({"message": "You played all the albums of an artist"})
+
+    return resp
+
+@app.route("/albums/<album_id>/tracks/play", methods=["PUT"])
+def play_album_tracks(album_id):
+    all_tracks = Track.query.filter(Track.album_id == album_id).all()
+    
+    try:
+        for track in all_tracks:
+            track.times_played += 1
+            db.session.add(track)
+    
+    except ValidationError as errors:
+        resp = jsonify(errors.messages)
+        resp.status_code = 400
+        return resp
+
+    db.session.commit()
+    resp = jsonify({"message": "You played all the tracks of an album"})
+
+    return resp
+
+@app.route("/tracks/<track_id>/play", methods=["PUT"])
+def play_track(track_id):
+    track = Track.query.get_or_404(track_id)
+    try:
+        track.times_played += 1
+    
+    except ValidationError as errors:
+        resp = jsonify(errors.messages)
+        resp.status_code = 400
+        return resp
+
+    
+    db.session.add(track)
+    db.session.commit()
+
+    resp = jsonify({"message": "You played a track"})
+
+    return resp
+
+
 #------------ DELETE ------------#
 
 
@@ -213,18 +282,14 @@ if __name__ == "__main__":
             a1 = Artist(id = "TWljaGFlbCBKYWNrc29u",
                         name = "Michael Jackson",
                         age = 21)
-                        #albums = "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u/albums")
-                        #tracks = "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u/tracks")
-                        #self = "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u")
+
             db.session.add(a1)
 
             al1 = Album(id = "T2ZmIHRoZSBXYWxsOlRXbG",
                         artist_id = "TWljaGFlbCBKYWNrc29u",
                         name = "Off the Wall",
                         genre = "Pop")
-                        #artist = ,
-                        #tracks = ,
-                        #self = )
+
 
             db.session.add(al1)
             
@@ -233,9 +298,7 @@ if __name__ == "__main__":
                        name = "Don't Stop 'Til You Get Enough",
                        duration = 4.1,
                        times_played = 0)
-                       #artist = ,  
-                       #album = ,
-                       #self = )
+
 
             db.session.add(t1)
 
