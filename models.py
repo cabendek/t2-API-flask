@@ -1,33 +1,16 @@
 from flask import url_for
 from flask_sqlalchemy import SQLAlchemy
 
-nombre_ruta = "127.0.0.1:5000/"
+nombre_ruta = "https://cabendek-t2.herokuapp.com"
 
 db = SQLAlchemy()
 
-
-#string = "Michael Jackson"
-#encoded = b64encode(string.encode()).decode('utf-8') 
-#print(encoded)
-
-
-#class Artist(db.Model): []
-#    id = db.Column(db.Integer, primary_key=True)
-#    slug = db.Column(db.String(64), index=True)
-#    name = db.Column(db.String(64), nullable=False)
-#    image_url = db.Column(db.String(128), nullable=False)
-
-#    @property
-#    def url(self):
-#        return url_for("get_artist", id=self.id)
 
 class Artist(db.Model):
     id = db.Column(db.String(64), primary_key = True)
     name = db.Column(db.String(64), nullable = False)
     age = db.Column(db.Integer, nullable = False)
     
-    #albums = db.relationship('Albums', backref='artist', lazy=True)
-    #tracks = db.relationship('Tracks', backref='album', lazy=True) #VER LO DE LAZY
     albums = db.Column(db.String(64), nullable = True)
     tracks = db.Column(db.String(64), nullable = True)
     self = db.Column(db.String(64), nullable = True)
@@ -52,7 +35,6 @@ class Album(db.Model):
     genre = db.Column(db.String(64), nullable = False)
     artist_id = db.Column(db.String(64), nullable=False)
     
-    #tracks = db.relationship('Tracks', backref='album', lazy=True) #VER LO DE LAZY
     artist = db.Column(db.String(64), nullable = True)
     tracks = db.Column(db.String(64), nullable = True)
     self = db.Column(db.String(64), nullable = True)
